@@ -1,0 +1,7 @@
+/build
+# Ignorar node_modules en la raíz
+/node_modules
+
+# Ignorar node_modules en la subcarpeta backend
+/backend/node_modules
+package-lock.json
