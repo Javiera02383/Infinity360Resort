@@ -31,5 +31,5 @@ Antes de comenzar, asegúrate de tener instalados los siguientes requisitos en t
 1. **Clonar el Repositorio**
    
    ```bash
-   git clone https://github.com/tu-usuario/tu-proyecto.git
+   git clone https://github.com/Javiera02383/Infinity360Resort.git
    cd tu-proyecto
