@@ -12,10 +12,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Configura Sequelize
-const sequelize = new Sequelize('railway', 'root', 'PAxiCdPYJqQXMVqZYqQrQlSkBuXGzauX', {
-    host: 'viaduct.proxy.rlwy.net',
+const sequelize = new Sequelize('mydb', 'root', 'root', {
+    host: 'localhost',
     dialect: 'mysql',
-    port: 22840,
+    port: 3307,
 });
 
 // Prueba la conexión a la base de datos
