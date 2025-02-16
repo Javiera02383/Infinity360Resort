@@ -82,10 +82,10 @@ const Booking = () => {
             fechaInicio: checkInDate,
             fechaFinal: checkOutDate,
             fechaReserva: new Date().toISOString().slice(0, 10),
-            estado: null, // Puedes ajustar este valor si es necesario
-            flujoAprobacion_idflujoAprobacion: null,
+            estado: 'P', // Estado predeterminado
+            flujoAprobacion_idflujoAprobacion: Math.floor(Math.random() * 15) + 1, // Valor aleatorio entre 1 y 15
             factura_idfactura: null,
-            empleado_idempleado: null,
+            empleado_idempleado: Math.floor(Math.random() * 15) + 1, // Valor aleatorio entre 1 y 15
             cliente_idcliente: parseInt(selectedClient),
             tipoHabitacion: roomType,
             selectedServices: selectedServices, // Debes manejar cómo guardar y procesar estos servicios
@@ -253,7 +253,7 @@ const Booking = () => {
                                                                 id={service.idservicio}
                                                                 onChange={handleServiceChange}
                                                             />
-                                                            {service.nombre} (${service.subTotal})
+                                                            {service.nombre} (L. {service.subTotal})
                                                         </Label>
                                                     </FormGroup>
                                                 </Col>

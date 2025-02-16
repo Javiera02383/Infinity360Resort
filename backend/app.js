@@ -138,8 +138,8 @@ app.post('/api/reservas', async (req, res) => {
 
     if (facturaExists[0].count === 0) {
       // Crear una nueva factura si no existe
-      await sequelize.query('INSERT INTO factura (idfactura, total, cliente_idcliente) VALUES (?, ?, ?)', {
-        replacements: [factura_idfactura, subtotal, cliente_idcliente],
+      await sequelize.query('INSERT INTO factura (idfactura, estado, total, fecha, cliente_idcliente) VALUES (?, ?, ?, ?, ?)', {
+        replacements: [factura_idfactura, 'P', subtotal, new Date(), cliente_idcliente],
         type: Sequelize.QueryTypes.INSERT
       });
     } else {
@@ -159,27 +159,27 @@ app.post('/api/reservas', async (req, res) => {
       VALUES (:fechaInicio, :fechaFinal, :fechaReserva, :subtotal, :flujoAprobacion_idflujoAprobacion, :factura_idfactura, :empleado_idempleado, :cliente_idcliente)`;
 
     // Valores a reemplazar en la consulta
-      const replacements = {
-        fechaInicio,
-        fechaFinal,
-        fechaReserva,
-        subtotal,
-        flujoAprobacion_idflujoAprobacion,
-        factura_idfactura,
-        empleado_idempleado,
-        cliente_idcliente
-      };
+    const replacements = {
+      fechaInicio,
+      fechaFinal,
+      fechaReserva,
+      subtotal,
+      flujoAprobacion_idflujoAprobacion,
+      factura_idfactura,
+      empleado_idempleado,
+      cliente_idcliente
+    };
 
-      // Ejecutar la consulta con los valores reemplazados
-      const result = await sequelize.query(query, {
-        replacements: replacements,
-        type: Sequelize.QueryTypes.INSERT
-      });
+    // Ejecutar la consulta con los valores reemplazados
+    const result = await sequelize.query(query, {
+      replacements: replacements,
+      type: Sequelize.QueryTypes.INSERT
+    });
 
     // Obtener el ID de la reserva recién creada
     const reservaId = result[0] ? result[0][0] : null;
 
-   res.status(201).json({ reservaId });
+    res.status(201).json({ reservaId });
 
   } catch (error) {
     console.error('Error creating booking 2:', error.message);
