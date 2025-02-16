@@ -101,7 +101,7 @@ const Restaurant = () => {
         <CardBody>
           <CardTitle tag="h5" className="font-weight-bold h4">{item.nombre}</CardTitle>
           <CardText className="text-warning h5">
-            <strong>Precio:</strong> ${item.precio.toFixed(2)}
+            <strong>Precio:</strong> L. {item.precio.toFixed(2)}
           </CardText>
         </CardBody>
       </Card>
