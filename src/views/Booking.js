@@ -116,6 +116,16 @@ const Booking = () => {
                 console.log('Reserva creada con éxito:', response.data);
                 setTotalFactura(response.data.totalFactura);
                 setBookingConfirmed(true);
+
+                // Actualizar el estado de la habitación a "Ocupada"
+                const roomId = response.data.reservaId; // Asegúrate de que el backend devuelva el ID de la habitación
+                axios.put(`http://localhost:3002/api/habitaciones/${roomId}`, { estado: 'Ocupada' })
+                    .then(() => {
+                        console.log('Estado de la habitación actualizado a Ocupada');
+                    })
+                    .catch(error => {
+                        console.error('Error al actualizar el estado de la habitación:', error);
+                    });
             })
             .catch(error => {
                 console.error('Error al crear la reserva:', error);
@@ -290,11 +300,11 @@ const Booking = () => {
                             ) : (
                                 
                                     <CardBody>
-                                        <Alert color="success" className="m-2 p-4">
+                                    <Alert color="success" className="m-2 p-4">
                                             <div className="d-flex align-items-center">
                                                 <span className="alert-inner--icon mr-2">
-                                                    <i className="ni ni-like-2" />
-                                                </span>
+                                                <i className="ni ni-like-2" />
+                                            </span>
                                                 <h4 className="alert-heading mb-0">Reserva Confirmada</h4>
                                             </div>
                                             <hr />
@@ -305,7 +315,7 @@ const Booking = () => {
                                                     <p className='h5'><strong>Fecha de Entrada:</strong> {checkInDate}</p>
                                                     <p className='h5'><strong>Fecha de Salida:</strong> {checkOutDate}</p>
                                                     <p className='h5'><strong>Cantidad de Días:</strong> {totalDays}</p>
-                                                    
+
                                                     <p className='h5'><strong>Número de Huéspedes:</strong> {guests}</p>
                                                     <p className='h5'><strong>Servicios:</strong> {selectedServices.join(', ')}</p>
                                                 </Col>
@@ -320,13 +330,13 @@ const Booking = () => {
                                             </Row>
                                             <Row>
                                                 <Col md="12" className="text-center">
+                                                <div className="text-center mt-4"> 
                                                 <p className='h5'><strong>Total de la Factura:</strong> L. {totalFactura}</p>
+                                                </div>
                                                 </Col>
-                                                </Row>
+                                            </Row>
                                         </Alert>
-                                        <div className="text-center mt-4">
-                                            <Button color="primary" tag={Link} to="/">Regresar al Inicio</Button>
-                                        </div>
+                                        <Button color="primary" tag={Link} to="/">Regresar al Inicio</Button>
                                     </CardBody>
                                 
                             )}

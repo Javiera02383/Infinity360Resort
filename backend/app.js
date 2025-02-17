@@ -55,6 +55,23 @@ app.get('/api/habitaciones/disponibles', async (req, res) => {
   }
 });
 
+app.put('/api/habitaciones/:id', async (req, res) => {
+  const { id } = req.params;
+  const { estado } = req.body;
+
+  try {
+    await sequelize.query('UPDATE habitacion SET estado = :estado WHERE idhabitacion = :id', {
+      replacements: { estado, id },
+      type: Sequelize.QueryTypes.UPDATE
+    });
+
+    res.status(200).json({ message: 'Estado de la habitación actualizado con éxito' });
+  } catch (error) {
+    console.error('Error al actualizar el estado de la habitación:', error.message);
+    res.status(500).json({ error: 'Error al actualizar el estado de la habitación' });
+  }
+});
+
 // -----------------------------------------------------------------------------------------------------------------
 // Ruta para obtener datos
 app.get('/api/personas', async (req, res) => {

@@ -50,7 +50,7 @@ class SimpleFooter extends React.Component {
 
               {/* Enlaces Rápidos */}
               <Col md="3" className="mb-3">
-                <h6 className="text-primary">Enlaces Rápidos</h6>
+                <h6 className="text-primary">Enlaces</h6>
                 <ul className="list-unstyled">
                   <li><a href="/" className="text-default">Inicio</a></li>
                   <li><a href="/rooms-page" className="text-default">Habitaciones</a></li>
@@ -67,7 +67,7 @@ class SimpleFooter extends React.Component {
                 <h6 className="text-primary">Información</h6>
                 <ul className="list-unstyled">
                   <li>
-                    <a href="tel:+123456789" className="text-default">Teléfono: +123 456 789</a>
+                    <a href="tel:+123456789" className="text-default">Teléfono: +504 25412547</a>
                   </li>
                   <li>
                     <a href="mailto:info@infinity360.com" className="text-default">Email: info@infinity360.com</a>
