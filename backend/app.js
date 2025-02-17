@@ -86,7 +86,7 @@ app.get('/api/reservas', async (req, res) => {
 
 // Ruta para crear una nueva reserva
 app.post('/api/reservas', async (req, res) => {
-  const { fechaInicio, fechaFinal, fechaReserva, cliente_idcliente, tipoHabitacion, selectedServices } = req.body;
+  const { fechaInicio, fechaFinal, cliente_idcliente, tipoHabitacion, selectedServices, numeroHuespedes, totalDays } = req.body;
   try {
     // Obtener el precio de la habitación seleccionada
     const room = await sequelize.query('SELECT precioNoche FROM vwHabitaciones WHERE tipoNombre = :tipoHabitacion', {
@@ -113,12 +113,8 @@ app.post('/api/reservas', async (req, res) => {
       servicesCost = services[0].total || 0;
     }
 
-        // Calcular el subtotal
-       const subtotal = Number(roomPrice) + Number(servicesCost);
-    
-
-
-
+    // Calcular el subtotal incluyendo el precio de la habitación por la cantidad de días y personas
+    const subtotal = (Number(roomPrice) * Number(totalDays) * Number(numeroHuespedes)) + Number(servicesCost);
 
     // Asignar un valor aleatorio entre 1 y 15 para flujoAprobacion_idflujoAprobacion
     const flujoAprobacion_idflujoAprobacion = Math.floor(Math.random() * 15) + 1;
@@ -155,14 +151,14 @@ app.post('/api/reservas', async (req, res) => {
 
     const query = `
       INSERT INTO reserva 
-      (fechaInicio, fechaFinal, fechaReserva, subtotal, flujoAprobacion_idflujoAprobacion, factura_idfactura, empleado_idempleado, cliente_idcliente) 
-      VALUES (:fechaInicio, :fechaFinal, :fechaReserva, :subtotal, :flujoAprobacion_idflujoAprobacion, :factura_idfactura, :empleado_idempleado, :cliente_idcliente)`;
+      (fechaInicio, fechaFinal, fechaReserva, subtotal, estado, flujoAprobacion_idflujoAprobacion, factura_idfactura, empleado_idempleado, cliente_idcliente) 
+      VALUES (:fechaInicio, :fechaFinal, :fechaReserva, :subtotal, 'P', :flujoAprobacion_idflujoAprobacion, :factura_idfactura, :empleado_idempleado, :cliente_idcliente)`;
 
     // Valores a reemplazar en la consulta
     const replacements = {
       fechaInicio,
       fechaFinal,
-      fechaReserva,
+      fechaReserva: new Date(),
       subtotal,
       flujoAprobacion_idflujoAprobacion,
       factura_idfactura,
@@ -179,11 +175,19 @@ app.post('/api/reservas', async (req, res) => {
     // Obtener el ID de la reserva recién creada
     const reservaId = result[0] ? result[0][0] : null;
 
-    res.status(201).json({ reservaId });
+// Obtener el total de la factura recién creada
+        const factura = await sequelize.query('SELECT total FROM factura WHERE idfactura = :factura_idfactura', {
+          replacements: { factura_idfactura },
+          type: Sequelize.QueryTypes.SELECT
+        });
+    
+        const totalFactura = factura[0].total;
+
+    res.status(201).json({ reservaId: result[0], totalFactura });
 
   } catch (error) {
-    console.error('Error creating booking 2:', error.message);
-    res.status(500).json({ error: 'Error creating booking 2' });
+    console.error('Error creating booking:', error.message);
+    res.status(500).json({ error: 'Error creating booking' });
   }
 });
 
@@ -371,12 +375,12 @@ app.get('/api/restaurantInfo', async (req, res) => {
 // Ruta para crear una nueva reserva en reservaRestaurante
 app.post('/api/reservaRestaurante', async (req, res) => {
   try {
-    const { fecha, hora, numeroPersonas, comentarios, restaurante_idrestaurante } = req.body;
+    const { fecha, hora, numeroHuespedes, comentarios, restaurante_idrestaurante } = req.body;
 
     // Insertar la nueva reserva en la tabla reservaRestaurante
     const [reservaResult] = await sequelize.query(
-      'INSERT INTO reservaRestaurante (fecha, hora, numeroPersonas, comentarios, restaurante_idrestaurante) VALUES (?, ?, ?, ?, ?)',
-      { replacements: [fecha, hora, numeroPersonas, comentarios, restaurante_idrestaurante], type: Sequelize.QueryTypes.INSERT }
+      'INSERT INTO reservaRestaurante (fecha, hora, Personas, comentarios, restaurante_idrestaurante) VALUES (?, ?, ?, ?, ?)',
+      { replacements: [fecha, hora, numeroHuespedes, comentarios, restaurante_idrestaurante], type: Sequelize.QueryTypes.INSERT }
     );
 
     // Obtener el ID de la última inserción

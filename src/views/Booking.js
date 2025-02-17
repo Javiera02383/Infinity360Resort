@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import axios from 'axios';
 import { Container, Row, Col, Form, FormGroup, Label, Input, Button, Card, CardBody, Alert } from 'reactstrap';
 import DemoNavbar from "components/Navbars/DemoNavbar.js";
@@ -19,6 +20,8 @@ const Booking = () => {
     const [availableRooms, setAvailableRooms] = useState([]);
     const [clientes, setClientes] = useState([]);
     const [selectedClient, setSelectedClient] = useState('');
+    const [totalFactura, setTotalFactura] = useState(0);
+    const [totalDays, setTotalDays] = useState(0);
 
     useEffect(() => {
         // Hacer la solicitud al backend para obtener la lista de clientes
@@ -75,9 +78,20 @@ const Booking = () => {
         }
     };
 
+    const calculateTotalDays = (startDate, endDate) => {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         
+        const totalDays = calculateTotalDays(checkInDate, checkOutDate);
+        setTotalDays(totalDays);
+
         const bookingData = {
             fechaInicio: checkInDate,
             fechaFinal: checkOutDate,
@@ -92,13 +106,15 @@ const Booking = () => {
             nombre: name,
             direccion: address,
             telefono: phone,
-            numeroHuespedes: guests
+            numeroHuespedes: guests,
+            totalDays: totalDays
         };
     
         // Enviar bookingData al backend
         axios.post('http://localhost:3002/api/reservas', bookingData)
             .then(response => {
                 console.log('Reserva creada con éxito:', response.data);
+                setTotalFactura(response.data.totalFactura);
                 setBookingConfirmed(true);
             })
             .catch(error => {
@@ -272,23 +288,47 @@ const Booking = () => {
                                 </Form>
 
                             ) : (
-                                <Card>
+                                
                                     <CardBody>
-                                    <Alert color="default m-4 pl-9">
-                                            
-                                            <h6 className="alert-heading m-4"><span className="alert-inner--icon">
-                                                <i className="ni ni-like-2" />
-                                            </span>Reserva Confirmada</h6>
-                                            <p className='h5 text-white'><strong>Fecha de Entrada:</strong> {checkInDate}</p>
-                                            <p className='h5 text-white'><strong>Fecha de Salida:</strong> {checkOutDate}</p>
-                                            <p className='h5 text-white'><strong>Tipo de Habitación:</strong> {roomType}</p>
-                                            <p className='h5 text-white'><strong>Número de Huéspedes:</strong> {guests}</p>
-                                            <p className='h5 text-white'><strong>Cliente:</strong> {name}</p>
-                                            <p className='h5 text-white'><strong>Dirección:</strong> {address}</p>
-                                            <p className='h5 text-white'><strong>Servicios:</strong> {selectedServices.join(', ')}</p>
+                                        <Alert color="success" className="m-2 p-4">
+                                            <div className="d-flex align-items-center">
+                                                <span className="alert-inner--icon mr-2">
+                                                    <i className="ni ni-like-2" />
+                                                </span>
+                                                <h4 className="alert-heading mb-0">Reserva Confirmada</h4>
+                                            </div>
+                                            <hr />
+                                            <Row>
+                                                <Col md="6">
+                                                
+                                                    <p className='h5'><strong>Tipo de Habitación:</strong> {roomType}</p>
+                                                    <p className='h5'><strong>Fecha de Entrada:</strong> {checkInDate}</p>
+                                                    <p className='h5'><strong>Fecha de Salida:</strong> {checkOutDate}</p>
+                                                    <p className='h5'><strong>Cantidad de Días:</strong> {totalDays}</p>
+                                                    
+                                                    <p className='h5'><strong>Número de Huéspedes:</strong> {guests}</p>
+                                                    <p className='h5'><strong>Servicios:</strong> {selectedServices.join(', ')}</p>
+                                                </Col>
+                                                <Col md="6">
+                                                    <p className='h5'><strong>Cliente:</strong> {name}</p>
+                                                    <p className='h5'><strong>Dirección:</strong> {address}</p>
+                                                    
+                                                    
+                                                   
+                                                </Col>
+                                                
+                                            </Row>
+                                            <Row>
+                                                <Col md="12" className="text-center">
+                                                <p className='h5'><strong>Total de la Factura:</strong> L. {totalFactura}</p>
+                                                </Col>
+                                                </Row>
                                         </Alert>
+                                        <div className="text-center mt-4">
+                                            <Button color="primary" tag={Link} to="/">Regresar al Inicio</Button>
+                                        </div>
                                     </CardBody>
-                                </Card>
+                                
                             )}
                         </Col>
                     </Row>
